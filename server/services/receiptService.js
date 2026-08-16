@@ -3,18 +3,147 @@ import path from "path";
 import PDFDocument from "pdfkit";
 import Receipt from "../models/Receipt.js";
 
-export async function createReceipt({type,memberId,donationId,amount,paymentMethod,transactionId,email,festivalYear,recipientName}){
- const count=await Receipt.countDocuments({festivalYear})+1;
- const receiptNumber=`GC-${festivalYear}-${String(count).padStart(6,"0")}`;
- const dir=path.resolve("receipts");fs.mkdirSync(dir,{recursive:true});
- const file=path.join(dir,`${receiptNumber}.pdf`);
- const istDate=new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata",dateStyle:"medium",timeStyle:"short"});
- await new Promise((resolve,reject)=>{const doc=new PDFDocument();const out=fs.createWriteStream(file);out.on("finish",resolve);out.on("error",reject);
- doc.pipe(out);doc.fontSize(20).text("GANESH COMMUNITY",{align:"center"});doc.moveDown();doc.fontSize(16).text("PAYMENT RECEIPT",{align:"center"});
- doc.moveDown();doc.fontSize(11).text(`Receipt No: ${receiptNumber}`);doc.text(`Festival Year: ${festivalYear}`);
- if(recipientName)doc.text(`Name: ${recipientName}`);
- doc.text(`Amount: ₹${amount}`);doc.text(`Payment Method: ${paymentMethod}`);
- doc.text(`Transaction/Reference: ${transactionId||"N/A"}`);doc.text(`Date (IST): ${istDate}`);doc.moveDown();doc.text("Thank you for supporting the Ganesh community.");doc.end();});
- return Receipt.create({receiptNumber,type,memberId,donationId,amount,paymentMethod,transactionId,pdfPath:file,email,emailSent:false,festivalYear});
-}
+export async function createReceipt({
+    type,
+    memberId,
+    donationId,
+    amount,
+    paymentMethod,
+    transactionId,
+    email,
+    festivalYear,
+    recipientName
+}) {
+    const receiptNumber =
+        `GC-${festivalYear || new Date().getFullYear()}-` +
+        `${Date.now()}`;
 
+    const receiptsDir = path.resolve("uploads", "receipts");
+
+    if (!fs.existsSync(receiptsDir)) {
+        fs.mkdirSync(receiptsDir, {
+            recursive: true
+        });
+    }
+
+    const fileName = `${receiptNumber}.pdf`;
+    const file = path.join(receiptsDir, fileName);
+
+    await new Promise((resolve, reject) => {
+        const doc = new PDFDocument({
+            margin: 50
+        });
+
+        const stream = fs.createWriteStream(file);
+
+        stream.on("finish", resolve);
+        stream.on("error", reject);
+
+        doc.pipe(stream);
+
+        doc.fontSize(22)
+            .text(
+                "GANESH COMMUNITY MANAGEMENT",
+                {
+                    align: "center"
+                }
+            );
+
+        doc.moveDown();
+
+        doc.fontSize(18)
+            .text(
+                "OFFICIAL PAYMENT RECEIPT",
+                {
+                    align: "center"
+                }
+            );
+
+        doc.moveDown(2);
+
+        doc.fontSize(12);
+
+        doc.text(`Receipt Number: ${receiptNumber}`);
+
+        doc.text(
+            `Festival Year: ${festivalYear || new Date().getFullYear()}`
+        );
+
+        doc.text(
+            `Date (IST): ${new Date().toLocaleString(
+                "en-IN",
+                {
+                    timeZone: "Asia/Kolkata"
+                }
+            )}`
+        );
+
+        doc.moveDown();
+
+        if (recipientName) {
+            doc.text(`Donor Name: ${recipientName}`);
+        }
+
+        if (email) {
+            doc.text(`Email: ${email}`);
+        }
+
+        if (memberId) {
+            doc.text(`Member ID: ${memberId}`);
+        }
+
+        doc.moveDown();
+
+        doc.fontSize(14)
+            .text(
+                `Amount: ₹${Number(amount).toLocaleString(
+                    "en-IN"
+                )}`
+            );
+
+        doc.fontSize(12);
+
+        doc.text(
+            `Payment Method: ${paymentMethod || "UPI"}`
+        );
+
+        doc.text(
+            `Transaction/Reference: ${transactionId || "N/A"
+            }`
+        );
+
+        doc.moveDown(2);
+
+        doc.text(
+            "Thank you for supporting the Ganesh community.",
+            {
+                align: "center"
+            }
+        );
+
+        doc.moveDown();
+
+        doc.text(
+            "This receipt was generated after payment verification.",
+            {
+                align: "center"
+            }
+        );
+
+        doc.end();
+    });
+
+    return Receipt.create({
+        receiptNumber,
+        type,
+        memberId: memberId || null,
+        donationId: donationId || null,
+        amount,
+        paymentMethod,
+        transactionId,
+        pdfPath: file,
+        email,
+        emailSent: false,
+        festivalYear
+    });
+}

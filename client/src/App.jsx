@@ -17,7 +17,7 @@ function Layout({ children, user, onLogout }) {
     <>
       <header>
         <Link to="/" className="brand">
-          ðŸ™ Ganesh Community
+          Ganesh Community
         </Link>
         <nav>
           <Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link>
@@ -32,9 +32,9 @@ function Layout({ children, user, onLogout }) {
               <Link to="/dashboard" className="btn btn-outline" style={{ padding: "6px 14px", fontSize: "0.85rem" }}>
                 Portal
               </Link>
-              <button 
-                onClick={onLogout} 
-                className="btn btn-primary" 
+              <button
+                onClick={onLogout}
+                className="btn btn-primary"
                 style={{ padding: "6px 14px", fontSize: "0.85rem" }}
               >
                 Logout
@@ -50,7 +50,7 @@ function Layout({ children, user, onLogout }) {
       <main>{children}</main>
       <footer>
         <div className="footer-content">
-          <div className="footer-logo">ðŸ™ GANESH COMMUNITY MANAGEMENT</div>
+          <div className="footer-logo">GANESH COMMUNITY MANAGEMENT</div>
           <p>© 2026 Ganesh Community. Preserving culture and cultivating community transparency.</p>
         </div>
       </footer>
@@ -59,82 +59,138 @@ function Layout({ children, user, onLogout }) {
 }
 
 // Countdown timer
-function Countdown({ festivalDate }) {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+// Festival Countdown
+function Countdown({ festivalDate, festivalTime = "00:00" }) {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
   const [status, setStatus] = useState("UPCOMING");
 
   useEffect(() => {
     if (!festivalDate) return;
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const target = new Date(festivalDate).getTime();
-      const diff = target - now;
 
-      if (diff <= 0) {
-        clearInterval(interval);
-        // Check if date was today or in past
-        const oneDay = 24 * 60 * 60 * 1000;
-        if (Math.abs(diff) < oneDay) {
-          setStatus("CELEBRATING");
-        } else {
-          setStatus("COMPLETED");
-        }
-      } else {
+    const updateCountdown = () => {
+      // Asia/Kolkata = UTC+05:30
+      const target = new Date(
+        `${festivalDate}T${festivalTime || "00:00"}+05:30`
+      );
+
+      const now = new Date();
+      const difference = target.getTime() - now.getTime();
+
+      if (difference > 0) {
         setStatus("UPCOMING");
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        setTimeLeft({ days, hours, minutes, seconds });
+
+        setTimeLeft({
+          days: Math.floor(
+            difference / (1000 * 60 * 60 * 24)
+          ),
+          hours: Math.floor(
+            (difference / (1000 * 60 * 60)) % 24
+          ),
+          minutes: Math.floor(
+            (difference / (1000 * 60)) % 60
+          ),
+          seconds: Math.floor(
+            (difference / 1000) % 60
+          ),
+        });
+      } else {
+        setStatus("CELEBRATING");
+
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
       }
-    }, 1000);
+    };
+
+    // Run immediately
+    updateCountdown();
+
+    // Update every second
+    const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [festivalDate]);
+  }, [festivalDate, festivalTime]);
 
   if (!festivalDate) {
-    return <p className="notice notice-info">Festival date is currently being finalized by the committee.</p>;
+    return (
+      <p className="notice notice-info">
+        Festival date is currently being finalized by the committee.
+      </p>
+    );
   }
 
   return (
     <div>
       {status === "UPCOMING" && (
         <>
-          <div className="festival-status-badge">Festival Countdown</div>
+          <div className="festival-status-badge">
+            Festival Countdown
+          </div>
+
           <div className="countdown-box">
             <div className="countdown-item">
-              <div className="num">{timeLeft.days}</div>
-              <div className="label">Days</div>
+              <div className="num">
+                {timeLeft.days}
+              </div>
+              <div className="label">
+                Days
+              </div>
             </div>
+
             <div className="countdown-item">
-              <div className="num">{timeLeft.hours}</div>
-              <div className="label">Hours</div>
+              <div className="num">
+                {timeLeft.hours}
+              </div>
+              <div className="label">
+                Hours
+              </div>
             </div>
+
             <div className="countdown-item">
-              <div className="num">{timeLeft.minutes}</div>
-              <div className="label">Mins</div>
+              <div className="num">
+                {timeLeft.minutes}
+              </div>
+              <div className="label">
+                Mins
+              </div>
             </div>
+
             <div className="countdown-item">
-              <div className="num">{timeLeft.seconds}</div>
-              <div className="label">Secs</div>
+              <div className="num">
+                {timeLeft.seconds}
+              </div>
+              <div className="label">
+                Secs
+              </div>
             </div>
           </div>
         </>
       )}
+
       {status === "CELEBRATING" && (
-        <div className="festival-status-badge" style={{ background: "rgba(76, 175, 80, 0.15)", color: "#4caf50", borderColor: "#4caf50" }}>
-          ðŸŽ‰ festival is currently active! Happy Ganesh Chaturthi! ðŸŽ‰
-        </div>
-      )}
-      {status === "COMPLETED" && (
-        <div className="festival-status-badge" style={{ background: "rgba(255, 255, 255, 0.05)", color: "#a0a0a0", borderColor: "#a0a0a0" }}>
-          festival celebrations completed for this year
+        <div
+          className="festival-status-badge"
+          style={{
+            background: "rgba(76, 175, 80, 0.15)",
+            color: "#4caf50",
+            borderColor: "#4caf50",
+          }}
+        >
+          Festival is currently active! Happy Ganesh Chaturthi!
         </div>
       )}
     </div>
   );
 }
-
 // Homepage View
 function Home() {
   const [settings, setSettings] = useState(null);
@@ -150,7 +206,7 @@ function Home() {
   return (
     <div className="page">
       <section className="hero">
-        <p style={{ fontSize: "2rem" }}>ðŸ•‰ï¸</p>
+        <p style={{ fontSize: "2rem" }}></p>
         <h1>{settings?.communityName || "Ganesh Community"}</h1>
         <p className="lead">{settings?.description || "Welcome to our Ganesh community portal."}</p>
         <Countdown festivalDate={settings?.festivalDate} />
@@ -204,9 +260,9 @@ function Home() {
           <p style={{ marginBottom: "16px" }}>Reach out directly to the festival committee for queries or manual receipt verifications.</p>
           {settings ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.9rem" }}>
-              <div>ðŸ“ž {settings.phone || "Not specified"}</div>
-              <div>✉️ {settings.email || "Not specified"}</div>
-              <div>ðŸ“ {settings.address || "Not specified"}</div>
+              <div>{settings.phone || "Not specified"}</div>
+              <div>✉️ {settings.email || "Not specified"}</div>
+              <div>{settings.address || "Not specified"}</div>
             </div>
           ) : (
             <p>Loading contact details...</p>
@@ -253,9 +309,9 @@ function Events() {
               </span>
               <h2>{ev.title}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "0.9rem", color: "var(--text-muted)", margin: "12px 0" }}>
-                <div>ðŸ“… Date: {ev.date ? new Date(ev.date).toLocaleDateString() : "TBD"}</div>
-                <div>ðŸ•’ Time: {ev.time || "TBD"}</div>
-                <div>ðŸ“ Venue: {ev.location || "TBD"}</div>
+                <div> {ev.date ? new Date(ev.date).toLocaleDateString() : "TBD"}</div>
+                <div> {ev.time || "TBD"}</div>
+                <div>: {ev.location || "TBD"}</div>
               </div>
               <p>{ev.description}</p>
             </div>
@@ -352,12 +408,12 @@ function Committee() {
             {members.map(m => (
               <div key={m._id} className="card" style={{ textAlign: "center" }}>
                 <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "linear-gradient(135deg, var(--accent-saffron), var(--accent-gold))", margin: "0 auto 16px auto", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" }}>
-                  ðŸ‘¤
+
                 </div>
                 <h2>{m.name}</h2>
                 <p style={{ color: "var(--accent-saffron)", fontWeight: "600", marginBottom: "8px" }}>{m.position}</p>
                 <p>{m.description || "Active community organizer."}</p>
-                {m.contact && <p style={{ fontSize: "0.85rem", marginTop: "12px", borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>ðŸ“ž {m.contact}</p>}
+                {m.contact && <p style={{ fontSize: "0.85rem", marginTop: "12px", borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>ntact}</p>}
               </div>
             ))}
           </div>
@@ -368,29 +424,29 @@ function Committee() {
             <form onSubmit={handleContactSubmit}>
               <div className="form-group">
                 <label>Name</label>
-                <input 
-                  type="text" 
-                  value={contactData.name} 
-                  onChange={e => setContactData({ ...contactData, name: e.target.value })} 
-                  required 
+                <input
+                  type="text"
+                  value={contactData.name}
+                  onChange={e => setContactData({ ...contactData, name: e.target.value })}
+                  required
                 />
               </div>
               <div className="form-group">
                 <label>Email</label>
-                <input 
-                  type="email" 
-                  value={contactData.email} 
-                  onChange={e => setContactData({ ...contactData, email: e.target.value })} 
-                  required 
+                <input
+                  type="email"
+                  value={contactData.email}
+                  onChange={e => setContactData({ ...contactData, email: e.target.value })}
+                  required
                 />
               </div>
               <div className="form-group">
                 <label>Message</label>
-                <textarea 
-                  rows="4" 
-                  value={contactData.message} 
-                  onChange={e => setContactData({ ...contactData, message: e.target.value })} 
-                  required 
+                <textarea
+                  rows="4"
+                  value={contactData.message}
+                  onChange={e => setContactData({ ...contactData, message: e.target.value })}
+                  required
                 ></textarea>
               </div>
               <button className="primary">Send Message</button>
@@ -468,10 +524,10 @@ function Transparency() {
                 <span>Expenses: ₹{finance?.expenses.toLocaleString()}</span>
               </div>
               <div className="progress-bar-outer">
-                <div 
-                  className="progress-bar-inner" 
-                  style={{ 
-                    width: `${finance?.totalReceived > 0 ? (finance.remaining / finance.totalReceived) * 100 : 0}%` 
+                <div
+                  className="progress-bar-inner"
+                  style={{
+                    width: `${finance?.totalReceived > 0 ? (finance.remaining / finance.totalReceived) * 100 : 0}%`
                   }}
                 ></div>
               </div>
@@ -485,155 +541,500 @@ function Transparency() {
 
 // Donation View
 function Donate() {
-  const [d, setD] = useState({ donorName: "", email: "", phone: "", amount: "" });
+  const [d, setD] = useState({
+    donorName: "",
+    email: "",
+    phone: "",
+    amount: ""
+  });
+
   const [m, setM] = useState("");
   const [success, setSuccess] = useState(false);
   const [id, setId] = useState("");
   const [receipt, setReceipt] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
+  /*
+   * STEP 1
+   *
+   * Create donation request.
+   *
+   * Backend creates:
+   * PENDING
+   */
   async function go(e) {
     e.preventDefault();
+
+    if (!d.donorName.trim()) {
+      setM("Please enter donor name.");
+      return;
+    }
+
+    if (!d.email.trim()) {
+      setM("Please enter email address.");
+      return;
+    }
+
+    if (!d.phone.trim()) {
+      setM("Please enter phone number.");
+      return;
+    }
+
+    if (!d.amount || Number(d.amount) < 10) {
+      setM(
+        "Please enter a donation amount of at least ₹10."
+      );
+      return;
+    }
+
     setLoading(true);
     setM("");
+
     try {
-      const r = await api.post("/donations", d);
+      const r = await api.post("/donations", {
+        donorName: d.donorName.trim(),
+        email: d.email.trim(),
+        phone: d.phone.trim(),
+        amount: Number(d.amount)
+      });
+
       setId(r.data.donation._id);
-      setM(r.data.message);
-      setSuccess(false);
+
+      setM(
+        "Donation request created. Please complete the payment using the official UPI QR code."
+      );
     } catch (err) {
-      setM(err.response?.data?.message || "Failed to create donation.");
+      setM(
+        err.response?.data?.message ||
+        "Failed to create donation request."
+      );
     } finally {
       setLoading(false);
     }
   }
 
-  async function demo() {
+
+  /*
+   * STEP 2
+   *
+   * Donor clicks:
+   * "I Have Completed Payment"
+   *
+   * IMPORTANT:
+   * This does NOT approve the donation.
+   *
+   * Backend:
+   * PENDING → PAYMENT_SUBMITTED
+   */
+  async function confirmPayment() {
+    if (!id) {
+      setM("Donation request not found.");
+      return;
+    }
+
     setLoading(true);
+    setM("");
+
     try {
-      const r = await api.post(`/donations/${id}/demo-success`);
-      setM(r.data.message);
-      setReceipt(r.data.receipt);
-      setSuccess(true);
+      const r = await api.post(
+        `/donations/${id}/submit-payment`
+      );
+
+      setSubmitted(true);
+
+      setM(
+        r.data.message ||
+        "Payment submitted. Waiting for admin verification."
+      );
     } catch (err) {
-      setM(err.response?.data?.message || "Demo payment confirmation failed.");
+      setM(
+        err.response?.data?.message ||
+        "Failed to submit payment."
+      );
     } finally {
       setLoading(false);
     }
   }
 
+
+  /*
+   * Receipt download.
+   */
   const handleDownload = async () => {
     if (!receipt) return;
+
     try {
-      await downloadReceipt(receipt._id, receipt.receiptNumber);
+      await downloadReceipt(
+        receipt._id,
+        receipt.receiptNumber
+      );
     } catch (err) {
       alert(err.message);
     }
   };
 
+
+  /*
+   * Reset everything.
+   */
+  const resetDonation = () => {
+    setSuccess(false);
+    setSubmitted(false);
+    setId("");
+    setReceipt(null);
+    setM("");
+
+    setD({
+      donorName: "",
+      email: "",
+      phone: "",
+      amount: ""
+    });
+  };
+
+
   return (
     <div className="page">
       <div className="form-container">
+
         <h1>Donations Desk</h1>
+
         {m && (
-          <p className={`notice ${success ? "notice-success" : "notice-info"}`}>
+          <p
+            className={`notice ${success
+              ? "notice-success"
+              : "notice-info"
+              }`}
+          >
             {m}
           </p>
         )}
 
-        {!success ? (
-          <form onSubmit={go}>
-            <div className="form-group">
-              <label>Donor Name</label>
-              <input 
-                type="text" 
-                value={d.donorName} 
-                onChange={e => setD({ ...d, donorName: e.target.value })} 
-                required 
-              />
-            </div>
-            <div className="form-group">
-              <label>Email Address</label>
-              <input 
-                type="email" 
-                value={d.email} 
-                onChange={e => setD({ ...d, email: e.target.value })} 
-                required 
-              />
-            </div>
-            <div className="form-group">
-              <label>Phone Number</label>
-              <input 
-                type="tel" 
-                value={d.phone} 
-                onChange={e => setD({ ...d, phone: e.target.value })} 
-                required 
-              />
-            </div>
-            <div className="form-group">
-              <label>Donation Amount (₹)</label>
-              <input 
-                type="number" 
-                min="10" 
-                value={d.amount} 
-                onChange={e => setD({ ...d, amount: e.target.value })} 
-                required 
-              />
-            </div>
-            <button className="primary" disabled={loading}>
-              {loading ? "Generating transaction..." : "Create Donation Request"}
-            </button>
-          </form>
-        ) : (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <p style={{ color: "var(--accent-gold)", fontWeight: "700", marginBottom: "20px" }}>
-              Thank you for your generous contribution to the community!
+
+        {/* ------------------------------------------------ */}
+        {/* STEP 3 — SUCCESS                                */}
+        {/* ------------------------------------------------ */}
+
+        {success ? (
+          <div
+            style={{
+              textAlign: "center",
+              marginTop: "20px"
+            }}
+          >
+            <p
+              style={{
+                color: "var(--accent-gold)",
+                fontWeight: "700",
+                marginBottom: "20px"
+              }}
+            >
+              Thank you for your generous contribution
+              to the community!
             </p>
+
             {receipt && (
-              <button className="secondary" onClick={handleDownload}>
-                <IconDownload /> Download Receipt PDF
+              <button
+                className="secondary"
+                onClick={handleDownload}
+              >
+                <IconDownload />
+                Download Receipt PDF
               </button>
             )}
-            <button 
-              className="outline" 
-              style={{ marginTop: "12px", width: "100%" }}
-              onClick={() => {
-                setSuccess(false);
-                setId("");
-                setReceipt(null);
-                setM("");
-                setD({ donorName: "", email: "", phone: "", amount: "" });
+
+            <button
+              className="outline"
+              style={{
+                marginTop: "12px",
+                width: "100%"
               }}
+              onClick={resetDonation}
             >
               Make Another Donation
             </button>
           </div>
-        )}
+        ) : submitted ? (
 
-        {id && !success && (
-          <div style={{ marginTop: "24px", padding: "20px", background: "rgba(255,255,255,0.02)", borderRadius: "8px", border: "1px dashed var(--border-color)", textAlign: "center" }}>
-            <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "16px" }}>
-              Simulated UPI QR Code Scan for Local Development
+          /* ------------------------------------------------ */
+          /* PAYMENT SUBMITTED                                */
+          /* ------------------------------------------------ */
+
+          <div
+            style={{
+              textAlign: "center",
+              marginTop: "30px"
+            }}
+          >
+            <h2>
+              Payment Submitted
+            </h2>
+
+            <p
+              style={{
+                color: "var(--text-muted)",
+                marginTop: "15px",
+                lineHeight: 1.7
+              }}
+            >
+              Your payment has been submitted for
+              verification.
+              <br />
+              An administrator will verify the UPI
+              transaction before approving your donation.
             </p>
-            <div style={{ width: "150px", height: "150px", background: "#fff", margin: "0 auto 16px auto", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px" }}>
-              {/* Fake QR */}
-              <div style={{ width: "130px", height: "130px", border: "6px solid #000", background: "#fff", display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
-                <div style={{ background: "#000", margin: "2px" }}></div>
-                <div style={{ background: "#fff" }}></div>
-                <div style={{ background: "#000", margin: "2px" }}></div>
-                <div style={{ background: "#fff" }}></div>
-                <div style={{ background: "#000", margin: "10px" }}></div>
-                <div style={{ background: "#fff" }}></div>
-                <div style={{ background: "#000", margin: "2px" }}></div>
-                <div style={{ background: "#fff" }}></div>
-                <div style={{ background: "#000", margin: "2px" }}></div>
-              </div>
+
+            <div
+              style={{
+                marginTop: "20px",
+                padding: "15px",
+                borderRadius: "10px",
+                background:
+                  "rgba(255,255,255,0.04)",
+                border:
+                  "1px solid var(--border-color)"
+              }}
+            >
+              <strong>
+                Status: PAYMENT SUBMITTED
+              </strong>
             </div>
-            <button className="secondary" onClick={demo} disabled={loading} style={{ width: "100%" }}>
-              Confirm Demo Success
+
+            <p
+              style={{
+                fontSize: "0.85rem",
+                color: "var(--text-muted)",
+                marginTop: "15px"
+              }}
+            >
+              A receipt will become available only
+              after the administrator verifies your
+              payment.
+            </p>
+
+            <button
+              className="outline"
+              style={{
+                marginTop: "20px",
+                width: "100%"
+              }}
+              onClick={resetDonation}
+            >
+              Close
             </button>
           </div>
+
+        ) : !id ? (
+
+          /* ------------------------------------------------ */
+          /* STEP 1 — DONATION FORM                           */
+          /* ------------------------------------------------ */
+
+          <form onSubmit={go}>
+
+            <div className="form-group">
+              <label>Donor Name</label>
+
+              <input
+                type="text"
+                value={d.donorName}
+                onChange={(e) =>
+                  setD({
+                    ...d,
+                    donorName: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
+
+
+            <div className="form-group">
+              <label>Email Address</label>
+
+              <input
+                type="email"
+                value={d.email}
+                onChange={(e) =>
+                  setD({
+                    ...d,
+                    email: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
+
+
+            <div className="form-group">
+              <label>Phone Number</label>
+
+              <input
+                type="tel"
+                value={d.phone}
+                onChange={(e) =>
+                  setD({
+                    ...d,
+                    phone: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
+
+
+            <div className="form-group">
+              <label>Donation Amount (₹)</label>
+
+              <input
+                type="number"
+                min="10"
+                value={d.amount}
+                onChange={(e) =>
+                  setD({
+                    ...d,
+                    amount: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
+
+
+            <button
+              className="primary"
+              type="submit"
+              disabled={loading}
+            >
+              {loading
+                ? "Creating Donation..."
+                : "Continue to Payment"}
+            </button>
+
+          </form>
+
+        ) : (
+
+          /* ------------------------------------------------ */
+          /* STEP 2 — UPI PAYMENT                            */
+          /* ------------------------------------------------ */
+
+          <div
+            style={{
+              textAlign: "center",
+              marginTop: "20px"
+            }}
+          >
+
+            <h2>
+              Complete Your Donation
+            </h2>
+
+            <p
+              style={{
+                color: "var(--text-muted)",
+                marginBottom: "20px"
+              }}
+            >
+              Scan the official UPI QR code using
+              Google Pay, PhonePe, Paytm or your
+              bank's UPI app.
+            </p>
+
+
+            <div
+              style={{
+                padding: "12px 20px",
+                marginBottom: "20px",
+                borderRadius: "8px",
+                background:
+                  "rgba(255,255,255,0.04)",
+                border:
+                  "1px solid var(--border-color)"
+              }}
+            >
+              <strong>
+                Donation Amount: ₹
+                {Number(
+                  d.amount
+                ).toLocaleString("en-IN")}
+              </strong>
+            </div>
+
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "20px"
+              }}
+            >
+              <div
+                style={{
+                  background: "#ffffff",
+                  padding: "16px",
+                  borderRadius: "12px",
+                  boxShadow:
+                    "0 8px 30px rgba(0,0,0,0.25)"
+                }}
+              >
+                <img
+                  src="/bank-qr.png"
+                  alt="Official UPI QR Code"
+                  style={{
+                    display: "block",
+                    width: "280px",
+                    height: "280px",
+                    objectFit: "contain"
+                  }}
+                />
+              </div>
+            </div>
+
+
+            <p
+              style={{
+                fontSize: "0.85rem",
+                color: "var(--text-muted)",
+                marginBottom: "20px"
+              }}
+            >
+              Complete the actual payment first.
+              After payment is completed, click
+              "I Have Completed Payment".
+            </p>
+
+
+            <button
+              className="secondary"
+              onClick={confirmPayment}
+              disabled={loading}
+              style={{
+                width: "100%",
+                marginBottom: "12px"
+              }}
+            >
+              {loading
+                ? "Submitting..."
+                : "I Have Completed Payment"}
+            </button>
+
+
+            <button
+              className="outline"
+              onClick={resetDonation}
+              disabled={loading}
+              style={{
+                width: "100%"
+              }}
+            >
+              Cancel Payment
+            </button>
+
+          </div>
         )}
+
       </div>
     </div>
   );
@@ -676,47 +1077,47 @@ function Register() {
         <form onSubmit={go}>
           <div className="form-group">
             <label>Name</label>
-            <input 
-              type="text" 
-              value={d.name} 
-              onChange={e => setD({ ...d, name: e.target.value })} 
-              required 
+            <input
+              type="text"
+              value={d.name}
+              onChange={e => setD({ ...d, name: e.target.value })}
+              required
             />
           </div>
           <div className="form-group">
             <label>Email Address</label>
-            <input 
-              type="email" 
-              value={d.email} 
-              onChange={e => setD({ ...d, email: e.target.value })} 
-              required 
+            <input
+              type="email"
+              value={d.email}
+              onChange={e => setD({ ...d, email: e.target.value })}
+              required
             />
           </div>
           <div className="form-group">
             <label>Phone Number</label>
-            <input 
-              type="tel" 
-              value={d.phone} 
-              onChange={e => setD({ ...d, phone: e.target.value })} 
-              required 
+            <input
+              type="tel"
+              value={d.phone}
+              onChange={e => setD({ ...d, phone: e.target.value })}
+              required
             />
           </div>
           <div className="form-group">
             <label>Residential Address</label>
-            <input 
-              type="text" 
-              value={d.address} 
-              onChange={e => setD({ ...d, address: e.target.value })} 
-              required 
+            <input
+              type="text"
+              value={d.address}
+              onChange={e => setD({ ...d, address: e.target.value })}
+              required
             />
           </div>
           <div className="form-group">
             <label>Occupation</label>
-            <input 
-              type="text" 
-              value={d.occupation} 
-              onChange={e => setD({ ...d, occupation: e.target.value })} 
-              required 
+            <input
+              type="text"
+              value={d.occupation}
+              onChange={e => setD({ ...d, occupation: e.target.value })}
+              required
             />
           </div>
           <button className="primary" disabled={loading}>
@@ -759,20 +1160,20 @@ function Login({ onLoginSuccess }) {
         <form onSubmit={go}>
           <div className="form-group">
             <label>Email Address</label>
-            <input 
-              type="email" 
-              value={d.email} 
-              onChange={e => setD({ ...d, email: e.target.value })} 
-              required 
+            <input
+              type="email"
+              value={d.email}
+              onChange={e => setD({ ...d, email: e.target.value })}
+              required
             />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input 
-              type="password" 
-              value={d.password} 
-              onChange={e => setD({ ...d, password: e.target.value })} 
-              required 
+            <input
+              type="password"
+              value={d.password}
+              onChange={e => setD({ ...d, password: e.target.value })}
+              required
             />
           </div>
           <button className="primary" disabled={loading}>
@@ -787,7 +1188,7 @@ function Login({ onLoginSuccess }) {
 // Dashboard router
 function Dashboard({ user, onLogout }) {
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
@@ -861,7 +1262,7 @@ function MemberPortal({ user }) {
         },
         authConfig()
       );
-      
+
       if (method === "UPI") {
         await api.post(`/payments/${r.data.payment._id}/demo-success`, {}, authConfig());
         setMsg("Simulated UPI payment verified. Receipt generated successfully.");
@@ -965,10 +1366,10 @@ function MemberPortal({ user }) {
                   <span>Remaining: ₹{data.remaining}</span>
                 </div>
                 <div className="progress-bar-outer">
-                  <div 
-                    className="progress-bar-inner" 
-                    style={{ 
-                      width: `${data.member.contributionAmount > 0 ? (data.paid / data.member.contributionAmount) * 100 : 0}%` 
+                  <div
+                    className="progress-bar-inner"
+                    style={{
+                      width: `${data.member.contributionAmount > 0 ? (data.paid / data.member.contributionAmount) * 100 : 0}%`
                     }}
                   ></div>
                 </div>
@@ -983,26 +1384,26 @@ function MemberPortal({ user }) {
               <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "16px" }}>
                 <div className="form-group">
                   <label>Amount (₹)</label>
-                  <input 
-                    type="number" 
-                    min="1" 
-                    value={amount} 
-                    onChange={e => setAmount(e.target.value)} 
-                    placeholder="Enter amount to pay" 
+                  <input
+                    type="number"
+                    min="1"
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    placeholder="Enter amount to pay"
                   />
                 </div>
-                
+
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                   <button className="primary" onClick={() => handlePay("UPI")} disabled={loading}>
                     Pay UPI (Demo)
                   </button>
-                  
+
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                    <input 
-                      type="text" 
-                      value={cashRef} 
-                      onChange={e => setCashRef(e.target.value)} 
-                      placeholder="Cash receipt/ref ref no" 
+                    <input
+                      type="text"
+                      value={cashRef}
+                      onChange={e => setCashRef(e.target.value)}
+                      placeholder="Cash receipt/ref ref no"
                       style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-color)", padding: "10px", borderRadius: "8px", color: "var(--text-main)", font: "inherit", fontSize: "0.85rem" }}
                     />
                     <button className="secondary" onClick={() => handlePay("CASH")} disabled={loading}>
@@ -1044,8 +1445,8 @@ function MemberPortal({ user }) {
                           <td>{p.transactionId || p.referenceNumber || "-"}</td>
                           <td>
                             {p.status === "SUCCESS" ? (
-                              <button 
-                                className="btn-outline" 
+                              <button
+                                className="btn-outline"
                                 style={{ padding: "4px 8px", fontSize: "0.8rem" }}
                                 onClick={() => handleDownload(p.receiptId || p._id, `Receipt-${p.transactionId || p._id}`)}
                               >
@@ -1073,29 +1474,29 @@ function MemberPortal({ user }) {
           <form onSubmit={handleUpdateProfile}>
             <div className="form-group">
               <label>Phone Number</label>
-              <input 
-                type="tel" 
-                value={profile.phone} 
-                onChange={e => setProfile({ ...profile, phone: e.target.value })} 
-                required 
+              <input
+                type="tel"
+                value={profile.phone}
+                onChange={e => setProfile({ ...profile, phone: e.target.value })}
+                required
               />
             </div>
             <div className="form-group">
               <label>Residential Address</label>
-              <input 
-                type="text" 
-                value={profile.address} 
-                onChange={e => setProfile({ ...profile, address: e.target.value })} 
-                required 
+              <input
+                type="text"
+                value={profile.address}
+                onChange={e => setProfile({ ...profile, address: e.target.value })}
+                required
               />
             </div>
             <div className="form-group">
               <label>Occupation</label>
-              <input 
-                type="text" 
-                value={profile.occupation} 
-                onChange={e => setProfile({ ...profile, occupation: e.target.value })} 
-                required 
+              <input
+                type="text"
+                value={profile.occupation}
+                onChange={e => setProfile({ ...profile, occupation: e.target.value })}
+                required
               />
             </div>
             <button className="primary">Save Profile</button>
@@ -1110,20 +1511,20 @@ function MemberPortal({ user }) {
           <form onSubmit={handleChangePassword}>
             <div className="form-group">
               <label>Current Password</label>
-              <input 
-                type="password" 
-                value={security.currentPassword} 
-                onChange={e => setSecurity({ ...security, currentPassword: e.target.value })} 
-                required 
+              <input
+                type="password"
+                value={security.currentPassword}
+                onChange={e => setSecurity({ ...security, currentPassword: e.target.value })}
+                required
               />
             </div>
             <div className="form-group">
               <label>New Password</label>
-              <input 
-                type="password" 
-                value={security.newPassword} 
-                onChange={e => setSecurity({ ...security, newPassword: e.target.value })} 
-                required 
+              <input
+                type="password"
+                value={security.newPassword}
+                onChange={e => setSecurity({ ...security, newPassword: e.target.value })}
+                required
               />
             </div>
             <button className="primary">Update Password</button>
@@ -1164,7 +1565,7 @@ function AdminPortal({ user }) {
     const config = authConfig();
     try {
       const [
-        appsRes, paymentsRes, membersRes, summaryRes, 
+        appsRes, paymentsRes, membersRes, summaryRes,
         donationsRes, receiptsRes, expensesRes, settingsRes,
         logsRes, eventsRes, galleryRes, committeeRes
       ] = await Promise.all([
@@ -1357,16 +1758,22 @@ function AdminPortal({ user }) {
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <ul className="admin-sidebar-menu">
-          <li className={`admin-sidebar-item ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>ðŸ“Š Overview</li>
-          <li className={`admin-sidebar-item ${activeTab === "members" ? "active" : ""}`} onClick={() => setActiveTab("members")}>ðŸ‘¥ Members Management</li>
-          <li className={`admin-sidebar-item ${activeTab === "applications" ? "active" : ""}`} onClick={() => setActiveTab("applications")}>ðŸ“ Pending Registrations</li>
-          <li className={`admin-sidebar-item ${activeTab === "cash" ? "active" : ""}`} onClick={() => setActiveTab("cash")}>ðŸ’µ Verify Cash Payments</li>
-          <li className={`admin-sidebar-item ${activeTab === "donations" ? "active" : ""}`} onClick={() => setActiveTab("donations")}>ðŸ’ Donations Registry</li>
-          <li className={`admin-sidebar-item ${activeTab === "receipts" ? "active" : ""}`} onClick={() => setActiveTab("receipts")}>ðŸ§¾ Receipt Audit</li>
-          <li className={`admin-sidebar-item ${activeTab === "expenses" ? "active" : ""}`} onClick={() => setActiveTab("expenses")}>ðŸ“‰ Expenses Desk</li>
-          <li className={`admin-sidebar-item ${activeTab === "content" ? "active" : ""}`} onClick={() => setActiveTab("content")}>ðŸ–¼ï¸ Content Control</li>
-          <li className={`admin-sidebar-item ${activeTab === "settings" ? "active" : ""}`} onClick={() => setActiveTab("settings")}>⚙️ Portal Settings</li>
-          <li className={`admin-sidebar-item ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>ðŸ“œ Security Audit Trail</li>
+          <li className={`admin-sidebar-item ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>Overview</li>
+          <li className={`admin-sidebar-item ${activeTab === "members" ? "active" : ""}`} onClick={() => setActiveTab("members")}>Members Management</li>
+          <li className={`admin-sidebar-item ${activeTab === "applications" ? "active" : ""}`} onClick={() => setActiveTab("applications")}>Pending Registrations</li>
+          <li className={`admin-sidebar-item ${activeTab === "cash" ? "active" : ""}`} onClick={() => setActiveTab("cash")}>Verify Cash Payments</li>
+          <li className={`admin-sidebar-item ${activeTab === "donations" ? "active" : ""}`} onClick={() => setActiveTab("donations")}>Donations Registry</li>
+          <li
+            className={`admin-sidebar-item ${activeTab === "donationVerification" ? "active" : ""}`}
+            onClick={() => setActiveTab("donationVerification")}
+          >
+            Donation Verification
+          </li>
+          <li className={`admin-sidebar-item ${activeTab === "receipts" ? "active" : ""}`} onClick={() => setActiveTab("receipts")}>Receipt Audit</li>
+          <li className={`admin-sidebar-item ${activeTab === "expenses" ? "active" : ""}`} onClick={() => setActiveTab("expenses")}>Expenses Desk</li>
+          <li className={`admin-sidebar-item ${activeTab === "content" ? "active" : ""}`} onClick={() => setActiveTab("content")}>Content Control</li>
+          <li className={`admin-sidebar-item ${activeTab === "settings" ? "active" : ""}`} onClick={() => setActiveTab("settings")}>⚙️ Portal Settings</li>
+          <li className={`admin-sidebar-item ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>Security Audit Trail</li>
         </ul>
       </aside>
 
@@ -1422,9 +1829,9 @@ function AdminPortal({ user }) {
               <div className="card">
                 <h2>Pending Action Quick Summary</h2>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "16px" }}>
-                  <div>ðŸ“ Applications pending approval: <strong>{apps.filter(x => x.status === "PENDING").length}</strong></div>
-                  <div>ðŸ’µ Cash payments waiting verification: <strong>{payments.filter(x => x.paymentMethod === "CASH" && x.status === "PENDING").length}</strong></div>
-                  <div>ðŸŽ‰ Scheduled festival events: <strong>{eventsList.length}</strong></div>
+                  <div>cations pending approval: <strong>{apps.filter(x => x.status === "PENDING").length}</strong></div>
+                  <div>payments waiting verification: <strong>{payments.filter(x => x.paymentMethod === "CASH" && x.status === "PENDING").length}</strong></div>
+                  <div>uled festival events: <strong>{eventsList.length}</strong></div>
                 </div>
               </div>
             </div>
@@ -1453,9 +1860,9 @@ function AdminPortal({ user }) {
                       <td>{m.email}</td>
                       <td>₹{m.contributionAmount}</td>
                       <td>
-                        <input 
-                          type="number" 
-                          placeholder="Amount" 
+                        <input
+                          type="number"
+                          placeholder="Amount"
                           defaultValue={m.contributionAmount}
                           onBlur={(e) => handleUpdateContribution(m._id, e.target.value)}
                           style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-color)", padding: "6px", borderRadius: "6px", color: "var(--text-main)", width: "100px", font: "inherit", fontSize: "0.85rem" }}
@@ -1518,11 +1925,11 @@ function AdminPortal({ user }) {
                   <form onSubmit={handleRejectApp}>
                     <div className="form-group">
                       <label>Rejection Reason</label>
-                      <input 
-                        type="text" 
-                        value={rejectReason} 
-                        onChange={e => setRejectReason(e.target.value)} 
-                        required 
+                      <input
+                        type="text"
+                        value={rejectReason}
+                        onChange={e => setRejectReason(e.target.value)}
+                        required
                         placeholder="Provide reason for rejection"
                       />
                     </div>
@@ -1612,6 +2019,10 @@ function AdminPortal({ user }) {
           </div>
         )}
 
+        {activeTab === "donationVerification" && (
+          <AdminDonations />
+        )}
+
         {activeTab === "receipts" && (
           <div className="card">
             <h2>Generated receipts Ledger</h2>
@@ -1636,8 +2047,8 @@ function AdminPortal({ user }) {
                         <td style={{ fontFamily: "monospace" }}>{r.receiptNumber}</td>
                         <td><span className="badge badge-success">{r.type}</span></td>
                         <td>
-                          {r.type === "MEMBER_PAYMENT" 
-                            ? `${r.memberId?.name || "Member"} (${r.memberId?.memberId || "-"})` 
+                          {r.type === "MEMBER_PAYMENT"
+                            ? `${r.memberId?.name || "Member"} (${r.memberId?.memberId || "-"})`
                             : `${r.donationId?.donorName || "Donor"} (Donation)`}
                         </td>
                         <td>₹{r.amount}</td>
@@ -1664,46 +2075,46 @@ function AdminPortal({ user }) {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                   <div className="form-group">
                     <label>Title</label>
-                    <input 
-                      type="text" 
-                      value={expenseData.title} 
-                      onChange={e => setExpenseData({ ...expenseData, title: e.target.value })} 
-                      required 
+                    <input
+                      type="text"
+                      value={expenseData.title}
+                      onChange={e => setExpenseData({ ...expenseData, title: e.target.value })}
+                      required
                     />
                   </div>
                   <div className="form-group">
                     <label>Category</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Tent, Puja, Prasad" 
-                      value={expenseData.category} 
-                      onChange={e => setExpenseData({ ...expenseData, category: e.target.value })} 
-                      required 
+                    <input
+                      type="text"
+                      placeholder="e.g. Tent, Puja, Prasad"
+                      value={expenseData.category}
+                      onChange={e => setExpenseData({ ...expenseData, category: e.target.value })}
+                      required
                     />
                   </div>
                   <div className="form-group">
                     <label>Amount (₹)</label>
-                    <input 
-                      type="number" 
-                      min="1" 
-                      value={expenseData.amount} 
-                      onChange={e => setExpenseData({ ...expenseData, amount: e.target.value })} 
-                      required 
+                    <input
+                      type="number"
+                      min="1"
+                      value={expenseData.amount}
+                      onChange={e => setExpenseData({ ...expenseData, amount: e.target.value })}
+                      required
                     />
                   </div>
                   <div className="form-group">
                     <label>Vendor</label>
-                    <input 
-                      type="text" 
-                      value={expenseData.vendor} 
-                      onChange={e => setExpenseData({ ...expenseData, vendor: e.target.value })} 
-                      required 
+                    <input
+                      type="text"
+                      value={expenseData.vendor}
+                      onChange={e => setExpenseData({ ...expenseData, vendor: e.target.value })}
+                      required
                     />
                   </div>
                   <div className="form-group">
                     <label>Payment Method</label>
-                    <select 
-                      value={expenseData.paymentMethod} 
+                    <select
+                      value={expenseData.paymentMethod}
                       onChange={e => setExpenseData({ ...expenseData, paymentMethod: e.target.value })}
                     >
                       <option value="CASH">CASH</option>
@@ -1713,10 +2124,10 @@ function AdminPortal({ user }) {
                   </div>
                   <div className="form-group">
                     <label>Reference Number</label>
-                    <input 
-                      type="text" 
-                      value={expenseData.referenceNumber} 
-                      onChange={e => setExpenseData({ ...expenseData, referenceNumber: e.target.value })} 
+                    <input
+                      type="text"
+                      value={expenseData.referenceNumber}
+                      onChange={e => setExpenseData({ ...expenseData, referenceNumber: e.target.value })}
                     />
                   </div>
                 </div>
@@ -1895,53 +2306,53 @@ function AdminPortal({ user }) {
             <form onSubmit={handleSaveSettings} style={{ marginTop: "20px" }}>
               <div className="form-group">
                 <label>Community Name</label>
-                <input 
-                  type="text" 
-                  value={settings.communityName} 
-                  onChange={e => setSettings({ ...settings, communityName: e.target.value })} 
-                  required 
+                <input
+                  type="text"
+                  value={settings.communityName}
+                  onChange={e => setSettings({ ...settings, communityName: e.target.value })}
+                  required
                 />
               </div>
               <div className="form-group">
                 <label>Welcome Description</label>
-                <textarea 
-                  rows="3" 
-                  value={settings.description} 
-                  onChange={e => setSettings({ ...settings, description: e.target.value })} 
-                  required 
+                <textarea
+                  rows="3"
+                  value={settings.description}
+                  onChange={e => setSettings({ ...settings, description: e.target.value })}
+                  required
                 ></textarea>
               </div>
               <div className="form-group">
                 <label>Ganesh Festival Date</label>
-                <input 
-                  type="date" 
-                  value={settings.festivalDate} 
-                  onChange={e => setSettings({ ...settings, festivalDate: e.target.value })} 
-                  required 
+                <input
+                  type="date"
+                  value={settings.festivalDate}
+                  onChange={e => setSettings({ ...settings, festivalDate: e.target.value })}
+                  required
                 />
               </div>
               <div className="form-group">
                 <label>Contact Phone</label>
-                <input 
-                  type="text" 
-                  value={settings.phone} 
-                  onChange={e => setSettings({ ...settings, phone: e.target.value })} 
+                <input
+                  type="text"
+                  value={settings.phone}
+                  onChange={e => setSettings({ ...settings, phone: e.target.value })}
                 />
               </div>
               <div className="form-group">
                 <label>Contact Email</label>
-                <input 
-                  type="email" 
-                  value={settings.email} 
-                  onChange={e => setSettings({ ...settings, email: e.target.value })} 
+                <input
+                  type="email"
+                  value={settings.email}
+                  onChange={e => setSettings({ ...settings, email: e.target.value })}
                 />
               </div>
               <div className="form-group">
                 <label>Contact Address</label>
-                <input 
-                  type="text" 
-                  value={settings.address} 
-                  onChange={e => setSettings({ ...settings, address: e.target.value })} 
+                <input
+                  type="text"
+                  value={settings.address}
+                  onChange={e => setSettings({ ...settings, address: e.target.value })}
                 />
               </div>
               <button className="primary">Save Configuration</button>
@@ -2028,6 +2439,368 @@ export default function App() {
     </Layout>
   );
 }
+
+//
+function AdminDonations() {
+  const [donations, setDonations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const [transactionIds, setTransactionIds] =
+    useState({});
+
+  const [rejectReasons, setRejectReasons] =
+    useState({});
+
+
+  async function loadDonations() {
+    setLoading(true);
+
+    try {
+      const r = await api.get(
+        "/donations",
+        authConfig()
+      );
+
+      setDonations(r.data);
+    } catch (err) {
+      setMessage(
+        err.response?.data?.message ||
+        "Failed to load donations."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  useEffect(() => {
+    loadDonations();
+  }, []);
+
+
+  function updateTransactionId(id, value) {
+    setTransactionIds((prev) => ({
+      ...prev,
+      [id]: value
+    }));
+  }
+
+
+  function updateRejectReason(id, value) {
+    setRejectReasons((prev) => ({
+      ...prev,
+      [id]: value
+    }));
+  }
+
+
+  async function approveDonation(donation) {
+    const transactionId =
+      transactionIds[donation._id]?.trim();
+
+    if (!transactionId) {
+      setMessage(
+        "Enter the actual UPI transaction/reference ID before approving."
+      );
+      return;
+    }
+
+    if (transactionId.length < 4) {
+      setMessage(
+        "Please enter a valid transaction/reference ID."
+      );
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const r = await api.post(
+        `/donations/${donation._id}/approve`,
+        {
+          transactionId
+        },
+        authConfig()
+      );
+
+      setMessage(
+        r.data.message ||
+        "Donation approved successfully."
+      );
+
+      await loadDonations();
+    } catch (err) {
+      setMessage(
+        err.response?.data?.message ||
+        "Failed to approve donation."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  async function rejectDonation(donation) {
+    const reason =
+      rejectReasons[donation._id]?.trim();
+
+    if (!reason) {
+      setMessage(
+        "Please enter a rejection reason."
+      );
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const r = await api.post(
+        `/donations/${donation._id}/reject`,
+        {
+          reason
+        },
+        authConfig()
+      );
+
+      setMessage(
+        r.data.message ||
+        "Donation rejected."
+      );
+
+      await loadDonations();
+    } catch (err) {
+      setMessage(
+        err.response?.data?.message ||
+        "Failed to reject donation."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  return (
+    <div className="page">
+      <div className="form-container">
+
+        <h1>Donation Verification</h1>
+
+        {message && (
+          <p className="notice notice-info">
+            {message}
+          </p>
+        )}
+
+        {loading && (
+          <p
+            style={{
+              color: "var(--text-muted)"
+            }}
+          >
+            Processing...
+          </p>
+        )}
+
+        {!donations.length ? (
+          <p
+            style={{
+              color: "var(--text-muted)"
+            }}
+          >
+            No donations found.
+          </p>
+        ) : (
+          <div
+            style={{
+              overflowX: "auto"
+            }}
+          >
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Donor</th>
+                  <th>Amount</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Transaction ID</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                {donations.map((donation) => (
+                  <tr key={donation._id}>
+
+                    <td>
+                      {donation.donorName}
+                    </td>
+
+                    <td>
+                      ₹
+                      {Number(
+                        donation.amount
+                      ).toLocaleString("en-IN")}
+                    </td>
+
+                    <td>
+                      {donation.phone}
+                    </td>
+
+                    <td>
+                      {donation.email}
+                    </td>
+
+                    <td>
+                      <strong>
+                        {donation.status}
+                      </strong>
+                    </td>
+
+                    <td>
+                      {donation.transactionId ||
+                        "-"}
+                    </td>
+
+                    <td>
+
+                      {donation.status ===
+                        "PAYMENT_SUBMITTED" ? (
+
+                        <div
+                          style={{
+                            minWidth: "260px"
+                          }}
+                        >
+
+                          <input
+                            type="text"
+                            placeholder="Actual UPI transaction ID"
+                            value={
+                              transactionIds[
+                              donation._id
+                              ] || ""
+                            }
+                            onChange={(e) =>
+                              updateTransactionId(
+                                donation._id,
+                                e.target.value
+                              )
+                            }
+                            style={{
+                              width: "100%",
+                              marginBottom: "8px"
+                            }}
+                          />
+
+                          <button
+                            className="primary"
+                            onClick={() =>
+                              approveDonation(
+                                donation
+                              )
+                            }
+                            disabled={loading}
+                            style={{
+                              width: "100%",
+                              marginBottom: "8px"
+                            }}
+                          >
+                            Approve Donation
+                          </button>
+
+
+                          <input
+                            type="text"
+                            placeholder="Rejection reason"
+                            value={
+                              rejectReasons[
+                              donation._id
+                              ] || ""
+                            }
+                            onChange={(e) =>
+                              updateRejectReason(
+                                donation._id,
+                                e.target.value
+                              )
+                            }
+                            style={{
+                              width: "100%",
+                              marginBottom: "8px"
+                            }}
+                          />
+
+
+                          <button
+                            className="outline"
+                            onClick={() =>
+                              rejectDonation(
+                                donation
+                              )
+                            }
+                            disabled={loading}
+                            style={{
+                              width: "100%"
+                            }}
+                          >
+                            Reject Donation
+                          </button>
+
+                        </div>
+
+                      ) : donation.status ===
+                        "SUCCESS" ? (
+
+                        <span>
+                          Approved
+                          {donation.receiptId
+                            ?.receiptNumber
+                            ? ` — ${donation.receiptId.receiptNumber}`
+                            : ""}
+                        </span>
+
+                      ) : donation.status ===
+                        "REJECTED" ? (
+
+                        <span>
+                          Rejected
+                          {donation.rejectionReason
+                            ? ` — ${donation.rejectionReason}`
+                            : ""}
+                        </span>
+
+                      ) : (
+
+                        <span>
+                          Waiting for donor payment
+                        </span>
+
+                      )}
+
+                    </td>
+
+                  </tr>
+                ))}
+
+              </tbody>
+            </table>
+
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+
+
+
 
 
 

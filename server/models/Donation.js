@@ -1,27 +1,106 @@
 import mongoose from "mongoose";
-import crypto from "crypto";
 
-function generatePublicReference() {
-  return "DON-" + crypto.randomBytes(5).toString("hex").toUpperCase();
-}
+const donationSchema = new mongoose.Schema(
+  {
+    donorName: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100
+    },
 
-const schema=new mongoose.Schema({
- donorName:{type:String,required:true},email:String,phone:String,amount:{type:Number,required:true,min:1},
- paymentMethod:{type:String,default:"UPI"},transactionId:String,
- status:{type:String,enum:["PENDING","SUCCESS","REJECTED","FAILED"],default:"PENDING"},
- // Cryptographically random public token used for donor-side status lookup, UTR submission and
- // receipt access. Never expose the MongoDB _id as a public/guessable access token.
- publicReference:{type:String,unique:true,index:true},
- rejectionReason:String,
- reviewedBy:{type:mongoose.Schema.Types.ObjectId,ref:"User"},reviewedAt:Date,
- receiptId:{type:mongoose.Schema.Types.ObjectId,ref:"Receipt"},festivalYear:{type:Number,default:()=>new Date().getFullYear()}
-},{timestamps:true});
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true
+    },
 
-schema.pre("validate", function(next){
-  if(!this.publicReference){
-    this.publicReference = generatePublicReference();
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 20
+    },
+
+    amount: {
+      type: Number,
+      required: true,
+      min: 10
+    },
+
+    paymentMethod: {
+      type: String,
+      enum: ["UPI"],
+      default: "UPI"
+    },
+
+    transactionId: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+
+    status: {
+      type: String,
+      enum: [
+        "PENDING",
+        "PAYMENT_SUBMITTED",
+        "SUCCESS",
+        "REJECTED"
+      ],
+      default: "PENDING"
+    },
+
+    paymentSubmittedAt: {
+      type: Date,
+      default: null
+    },
+
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    },
+
+    verifiedAt: {
+      type: Date,
+      default: null
+    },
+
+    rejectionReason: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+
+    receiptId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Receipt",
+      default: null
+    },
+
+    festivalYear: {
+      type: Number,
+      default: () => new Date().getFullYear()
+    }
+  },
+  {
+    timestamps: true
   }
-  next();
-});
+);
 
-export default mongoose.model("Donation",schema);
+// Prevent the same successful UPI transaction
+// from being used for another donation.
+donationSchema.index(
+  { transactionId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      status: "SUCCESS",
+      transactionId: { $type: "string" }
+    }
+  }
+);
+
+export default mongoose.model("Donation", donationSchema);
