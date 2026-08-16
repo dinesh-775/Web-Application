@@ -374,11 +374,13 @@ function Gallery() {
 function Committee() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [contactData, setContactData] = useState({
     name: "",
     email: "",
     message: ""
   });
+
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
@@ -413,6 +415,10 @@ function Committee() {
   return (
     <div className="page">
 
+      {/* =========================
+          PAGE TITLE
+      ========================== */}
+
       <h1 style={{ marginBottom: "10px" }}>
         Festival Committee
       </h1>
@@ -426,14 +432,23 @@ function Committee() {
         Meet the members guiding the celebrations.
       </p>
 
+      {/* =========================
+          LOADING
+      ========================== */}
+
       {loading ? (
         <p>Loading directory...</p>
+
       ) : members.length === 0 ? (
+
         <p className="notice notice-info">
           No committee members found.
         </p>
+
       ) : (
+
         <>
+
           {/* =========================
               COMMITTEE MEMBERS
           ========================== */}
@@ -441,31 +456,40 @@ function Committee() {
           <div
             className="grid"
             style={{
-              marginBottom: "60px"
+              marginBottom: "60px",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "16px"
             }}
           >
+
             {members.map((m) => (
+
               <div
                 key={m._id}
                 className="card"
                 style={{
-                  textAlign: "center"
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  padding: "14px",
+                  textAlign: "left"
                 }}
               >
 
                 {/* =========================
-                    MEMBER PHOTO
+                    LEFT - MEMBER PHOTO
                 ========================== */}
 
                 <div
                   style={{
-                    width: "100px",
-                    height: "100px",
+                    width: "70px",
+                    height: "70px",
+                    minWidth: "70px",
                     borderRadius: "50%",
                     overflow: "hidden",
                     background:
                       "linear-gradient(135deg, var(--accent-saffron), var(--accent-gold))",
-                    margin: "0 auto 16px auto",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
@@ -473,9 +497,12 @@ function Committee() {
                 >
 
                   {m.photoUrl ? (
+
                     <img
                       src={m.photoUrl}
-                      alt={m.name || "Committee member"}
+                      alt={
+                        m.name || "Committee member"
+                      }
                       style={{
                         width: "100%",
                         height: "100%",
@@ -487,76 +514,101 @@ function Committee() {
                           m.photoUrl
                         );
 
-                        e.currentTarget.style.display = "none";
+                        e.currentTarget.style.display =
+                          "none";
                       }}
                     />
+
                   ) : (
+
                     <span
                       style={{
-                        fontSize: "2rem"
+                        fontSize: "1.6rem"
                       }}
                     >
                       👤
                     </span>
+
                   )}
 
                 </div>
 
                 {/* =========================
-                    MEMBER NAME
+                    RIGHT - MEMBER CONTENT
                 ========================== */}
 
-                <h2
+                <div
                   style={{
-                    marginBottom: "8px"
+                    minWidth: 0,
+                    flex: 1
                   }}
                 >
-                  {m.name || "Committee Member"}
-                </h2>
 
-                {/* =========================
-                    POSITION
-                ========================== */}
+                  {/* NAME */}
 
-                <p
-                  style={{
-                    color: "var(--accent-saffron)",
-                    fontWeight: "600",
-                    marginBottom: "8px"
-                  }}
-                >
-                  {m.position || "Committee Member"}
-                </p>
-
-                {/* =========================
-                    DESCRIPTION
-                ========================== */}
-
-                <p>
-                  {m.description ||
-                    "Active community organizer."}
-                </p>
-
-                {/* =========================
-                    CONTACT
-                ========================== */}
-
-                {m.contact && (
-                  <p
+                  <h2
                     style={{
-                      fontSize: "0.85rem",
-                      marginTop: "12px",
-                      borderTop:
-                        "1px solid var(--border-color)",
-                      paddingTop: "8px"
+                      fontSize: "1rem",
+                      margin: "0 0 4px 0",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
                     }}
                   >
-                    {m.contact}
+                    {m.name ||
+                      "Committee Member"}
+                  </h2>
+
+                  {/* POSITION */}
+
+                  <p
+                    style={{
+                      color:
+                        "var(--accent-saffron)",
+                      fontWeight: "600",
+                      fontSize: "0.85rem",
+                      margin: "0 0 5px 0"
+                    }}
+                  >
+                    {m.position ||
+                      "Committee Member"}
                   </p>
-                )}
+
+                  {/* DESCRIPTION */}
+
+                  <p
+                    style={{
+                      fontSize: "0.78rem",
+                      color:
+                        "var(--text-muted)",
+                      margin: "0 0 6px 0"
+                    }}
+                  >
+                    {m.description ||
+                      "Active community organizer."}
+                  </p>
+
+                  {/* CONTACT */}
+
+                  {m.contact && (
+
+                    <p
+                      style={{
+                        fontSize: "0.78rem",
+                        margin: "0"
+                      }}
+                    >
+                      📞 {m.contact}
+                    </p>
+
+                  )}
+
+                </div>
 
               </div>
+
             ))}
+
           </div>
 
           {/* =========================
@@ -567,15 +619,23 @@ function Committee() {
 
             <h1>Leave a Message</h1>
 
+            {/* SUCCESS MESSAGE */}
+
             {notice && (
+
               <p className="notice notice-success">
                 {notice}
               </p>
+
             )}
 
-            <form onSubmit={handleContactSubmit}>
+            <form
+              onSubmit={handleContactSubmit}
+            >
 
-              {/* NAME */}
+              {/* =========================
+                  NAME
+              ========================== */}
 
               <div className="form-group">
 
@@ -595,7 +655,9 @@ function Committee() {
 
               </div>
 
-              {/* EMAIL */}
+              {/* =========================
+                  EMAIL
+              ========================== */}
 
               <div className="form-group">
 
@@ -615,7 +677,9 @@ function Committee() {
 
               </div>
 
-              {/* MESSAGE */}
+              {/* =========================
+                  MESSAGE
+              ========================== */}
 
               <div className="form-group">
 
@@ -635,7 +699,9 @@ function Committee() {
 
               </div>
 
-              {/* SUBMIT */}
+              {/* =========================
+                  SUBMIT BUTTON
+              ========================== */}
 
               <button
                 type="submit"
@@ -647,8 +713,11 @@ function Committee() {
             </form>
 
           </div>
+
         </>
+
       )}
+
     </div>
   );
 }
