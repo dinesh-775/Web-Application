@@ -374,90 +374,228 @@ function Gallery() {
 function Committee() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [contactData, setContactData] = useState({ name: "", email: "", message: "" });
+  const [contactData, setContactData] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
     api.get("/content/committee")
-      .then(x => {
-        setMembers(x.data);
+      .then(response => {
+        console.log("Committee data:", response.data);
+        setMembers(response.data);
         setLoading(false);
       })
-      .catch(err => {
-        console.error(err);
+      .catch(error => {
+        console.error("Failed to load committee:", error);
         setLoading(false);
       });
   }, []);
 
   const handleContactSubmit = (e) => {
     e.preventDefault();
-    setNotice("Thank you for your message. A committee member will get back to you shortly.");
-    setContactData({ name: "", email: "", message: "" });
+
+    setNotice(
+      "Thank you for your message. A committee member will get back to you shortly."
+    );
+
+    setContactData({
+      name: "",
+      email: "",
+      message: ""
+    });
   };
 
   return (
     <div className="page">
-      <h1 style={{ marginBottom: "10px" }}>Festival Committee</h1>
-      <p style={{ color: "var(--text-muted)", marginBottom: "40px" }}>Meet the members guiding the celebrations.</p>
+
+      <h1 style={{ marginBottom: "10px" }}>
+        Festival Committee
+      </h1>
+
+      <p
+        style={{
+          color: "var(--text-muted)",
+          marginBottom: "40px"
+        }}
+      >
+        Meet the members guiding the celebrations.
+      </p>
 
       {loading ? (
         <p>Loading directory...</p>
+      ) : members.length === 0 ? (
+        <p className="notice notice-info">
+          No committee members found.
+        </p>
       ) : (
         <>
-          <div className="grid" style={{ marginBottom: "60px" }}>
+          <div
+            className="grid"
+            style={{ marginBottom: "60px" }}
+          >
+
             {members.map(m => (
-              <div key={m._id} className="card" style={{ textAlign: "center" }}>
-                <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "linear-gradient(135deg, var(--accent-saffron), var(--accent-gold))", margin: "0 auto 16px auto", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" }}>
+              <div
+                key={m._id}
+                className="card"
+                style={{
+                  textAlign: "center"
+                }}
+              >
+
+                {/* PHOTO */}
+                <div
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    background:
+                      "linear-gradient(135deg, var(--accent-saffron), var(--accent-gold))",
+                    margin: "0 auto 16px auto",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  {m.photoUrl ? (
+                    <img
+                      src={m.photoUrl}
+                      alt={m.name || "Committee member"}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover"
+                      }}
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: "2rem" }}>
+                      👤
+                    </span>
+                  )}
                 </div>
 
-                <div>
-                  <p style={{ color: "var(--accent-saffron)", fontWeight: "600", marginBottom: "8px" }}>
-                    {m.position}
-                  </p>
+                {/* NAME */}
+                <h2
+                  style={{
+                    marginBottom: "8px"
+                  }}
+                >
+                  {m.name || "Committee Member"}
+                </h2>
 
-                  <p>{m.description || "Active community organizer."}</p>
+                {/* POSITION */}
+                <p
+                  style={{
+                    color: "var(--accent-saffron)",
+                    fontWeight: "600",
+                    marginBottom: "8px"
+                  }}
+                >
+                  {m.position}
+                </p>
 
-                  <p style={{ borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>
+                {/* DESCRIPTION */}
+                <p>
+                  {m.description ||
+                    "Active community organizer."}
+                </p>
+
+                {/* CONTACT */}
+                {m.contact && (
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      marginTop: "12px",
+                      borderTop:
+                        "1px solid var(--border-color)",
+                      paddingTop: "8px"
+                    }}
+                  >
                     {m.contact}
                   </p>
-                </div>
+                )}
+
               </div>
             ))}
+
           </div>
 
+          {/* CONTACT FORM */}
+
           <div className="form-container">
+
             <h1>Leave a Message</h1>
-            {notice && <p className="notice notice-success">{notice}</p>}
+
+            {notice && (
+              <p className="notice notice-success">
+                {notice}
+              </p>
+            )}
+
             <form onSubmit={handleContactSubmit}>
+
               <div className="form-group">
                 <label>Name</label>
+
                 <input
                   type="text"
                   value={contactData.name}
-                  onChange={e => setContactData({ ...contactData, name: e.target.value })}
+                  onChange={e =>
+                    setContactData({
+                      ...contactData,
+                      name: e.target.value
+                    })
+                  }
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label>Email</label>
+
                 <input
                   type="email"
                   value={contactData.email}
-                  onChange={e => setContactData({ ...contactData, email: e.target.value })}
+                  onChange={e =>
+                    setContactData({
+                      ...contactData,
+                      email: e.target.value
+                    })
+                  }
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label>Message</label>
+
                 <textarea
                   rows="4"
                   value={contactData.message}
-                  onChange={e => setContactData({ ...contactData, message: e.target.value })}
+                  onChange={e =>
+                    setContactData({
+                      ...contactData,
+                      message: e.target.value
+                    })
+                  }
                   required
-                ></textarea>
+                />
+
               </div>
-              <button className="primary">Send Message</button>
+
+              <button className="primary">
+                Send Message
+              </button>
+
             </form>
+
           </div>
         </>
       )}
