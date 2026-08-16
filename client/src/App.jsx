@@ -382,14 +382,16 @@ function Committee() {
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    api.get("/content/committee")
-      .then(response => {
-        console.log("Committee data:", response.data);
+    api
+      .get("/content/committee")
+      .then((response) => {
+        console.log("COMMITTEE API DATA:", response.data);
+
         setMembers(response.data);
         setLoading(false);
       })
-      .catch(error => {
-        console.error("Failed to load committee:", error);
+      .catch((error) => {
+        console.error("COMMITTEE API ERROR:", error);
         setLoading(false);
       });
   }, []);
@@ -432,12 +434,17 @@ function Committee() {
         </p>
       ) : (
         <>
+          {/* =========================
+              COMMITTEE MEMBERS
+          ========================== */}
+
           <div
             className="grid"
-            style={{ marginBottom: "60px" }}
+            style={{
+              marginBottom: "60px"
+            }}
           >
-
-            {members.map(m => (
+            {members.map((m) => (
               <div
                 key={m._id}
                 className="card"
@@ -446,7 +453,10 @@ function Committee() {
                 }}
               >
 
-                {/* PHOTO */}
+                {/* =========================
+                    MEMBER PHOTO
+                ========================== */}
+
                 <div
                   style={{
                     width: "100px",
@@ -461,6 +471,7 @@ function Committee() {
                     justifyContent: "center"
                   }}
                 >
+
                   {m.photoUrl ? (
                     <img
                       src={m.photoUrl}
@@ -471,17 +482,30 @@ function Committee() {
                         objectFit: "cover"
                       }}
                       onError={(e) => {
+                        console.error(
+                          "Image failed to load:",
+                          m.photoUrl
+                        );
+
                         e.currentTarget.style.display = "none";
                       }}
                     />
                   ) : (
-                    <span style={{ fontSize: "2rem" }}>
+                    <span
+                      style={{
+                        fontSize: "2rem"
+                      }}
+                    >
                       👤
                     </span>
                   )}
+
                 </div>
 
-                {/* NAME */}
+                {/* =========================
+                    MEMBER NAME
+                ========================== */}
+
                 <h2
                   style={{
                     marginBottom: "8px"
@@ -490,7 +514,10 @@ function Committee() {
                   {m.name || "Committee Member"}
                 </h2>
 
-                {/* POSITION */}
+                {/* =========================
+                    POSITION
+                ========================== */}
+
                 <p
                   style={{
                     color: "var(--accent-saffron)",
@@ -498,16 +525,22 @@ function Committee() {
                     marginBottom: "8px"
                   }}
                 >
-                  {m.position}
+                  {m.position || "Committee Member"}
                 </p>
 
-                {/* DESCRIPTION */}
+                {/* =========================
+                    DESCRIPTION
+                ========================== */}
+
                 <p>
                   {m.description ||
                     "Active community organizer."}
                 </p>
 
-                {/* CONTACT */}
+                {/* =========================
+                    CONTACT
+                ========================== */}
+
                 {m.contact && (
                   <p
                     style={{
@@ -524,10 +557,11 @@ function Committee() {
 
               </div>
             ))}
-
           </div>
 
-          {/* CONTACT FORM */}
+          {/* =========================
+              CONTACT FORM
+          ========================== */}
 
           <div className="form-container">
 
@@ -541,13 +575,16 @@ function Committee() {
 
             <form onSubmit={handleContactSubmit}>
 
+              {/* NAME */}
+
               <div className="form-group">
+
                 <label>Name</label>
 
                 <input
                   type="text"
                   value={contactData.name}
-                  onChange={e =>
+                  onChange={(e) =>
                     setContactData({
                       ...contactData,
                       name: e.target.value
@@ -555,15 +592,19 @@ function Committee() {
                   }
                   required
                 />
+
               </div>
 
+              {/* EMAIL */}
+
               <div className="form-group">
+
                 <label>Email</label>
 
                 <input
                   type="email"
                   value={contactData.email}
-                  onChange={e =>
+                  onChange={(e) =>
                     setContactData({
                       ...contactData,
                       email: e.target.value
@@ -571,15 +612,19 @@ function Committee() {
                   }
                   required
                 />
+
               </div>
 
+              {/* MESSAGE */}
+
               <div className="form-group">
+
                 <label>Message</label>
 
                 <textarea
                   rows="4"
                   value={contactData.message}
-                  onChange={e =>
+                  onChange={(e) =>
                     setContactData({
                       ...contactData,
                       message: e.target.value
@@ -590,7 +635,12 @@ function Committee() {
 
               </div>
 
-              <button className="primary">
+              {/* SUBMIT */}
+
+              <button
+                type="submit"
+                className="primary"
+              >
                 Send Message
               </button>
 
