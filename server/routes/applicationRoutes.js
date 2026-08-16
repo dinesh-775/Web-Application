@@ -1,0 +1,2 @@
+import {Router} from "express";import {create,list,approve,reject} from "../controllers/applicationController.js";import {auth,roles} from "../middleware/auth.js";
+const r=Router();r.post("/",create);r.get("/",auth,roles("PRESIDENT","VICE_PRESIDENT"),list);r.patch("/:id/approve",auth,roles("PRESIDENT","VICE_PRESIDENT"),approve);r.patch("/:id/reject",auth,roles("PRESIDENT","VICE_PRESIDENT"),reject);export default r;

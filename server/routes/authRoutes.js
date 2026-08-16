@@ -1,0 +1,2 @@
+import {Router} from "express";import {login,me,changePassword} from "../controllers/authController.js";import {auth} from "../middleware/auth.js";
+const r=Router();r.post("/login",login);r.get("/me",auth,me);r.post("/change-password",auth,changePassword);export default r;

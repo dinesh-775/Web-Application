@@ -1,0 +1,5 @@
+import {Router} from "express";import * as c from "../controllers/contentController.js";import {auth,roles} from "../middleware/auth.js";
+const r=Router();r.get("/events",c.events);r.get("/gallery",c.gallery);r.get("/committee",c.committee);r.get("/settings",c.getSettings);
+r.post("/events",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.createEvent);r.patch("/events/:id",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.updateEvent);r.delete("/events/:id",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.deleteEvent);
+r.post("/gallery",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.createGallery);r.delete("/gallery/:id",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.deleteGallery);
+r.post("/committee",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.createCommittee);r.patch("/settings",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.updateSettings);export default r;

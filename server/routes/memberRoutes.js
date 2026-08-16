@@ -1,0 +1,2 @@
+import {Router} from "express";import {me,list,updateContribution,updateProfile} from "../controllers/memberController.js";import {auth,roles} from "../middleware/auth.js";
+const r=Router();r.get("/me",auth,roles("MEMBER"),me);r.patch("/profile",auth,roles("MEMBER"),updateProfile);r.get("/",auth,roles("PRESIDENT","VICE_PRESIDENT"),list);r.patch("/:id/contribution",auth,roles("PRESIDENT","VICE_PRESIDENT"),updateContribution);export default r;

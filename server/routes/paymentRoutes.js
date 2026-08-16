@@ -1,0 +1,2 @@
+import {Router} from "express";import {auth,roles} from "../middleware/auth.js";import {create,demoSuccess,list,approveCash} from "../controllers/paymentController.js";
+const r=Router();r.post("/",auth,roles("MEMBER"),create);r.post("/:id/demo-success",auth,roles("MEMBER"),demoSuccess);r.get("/",auth,roles("PRESIDENT","VICE_PRESIDENT"),list);r.patch("/:id/approve-cash",auth,roles("PRESIDENT","VICE_PRESIDENT"),approveCash);export default r;

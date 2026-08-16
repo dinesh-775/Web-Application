@@ -1,0 +1,2 @@
+import {Router} from "express";import {summary} from "../controllers/financeController.js";import {auth,roles} from "../middleware/auth.js";
+const r=Router();r.get("/summary",summary);r.get("/admin-summary",auth,roles("PRESIDENT","VICE_PRESIDENT"),summary);export default r;

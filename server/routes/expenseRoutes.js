@@ -1,0 +1,2 @@
+import {Router} from "express";import * as c from "../controllers/expenseController.js";import {auth,roles} from "../middleware/auth.js";
+const r=Router();r.get("/",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.list);r.post("/",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.create);r.patch("/:id",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.update);r.delete("/:id",auth,roles("PRESIDENT","VICE_PRESIDENT"),c.remove);export default r;

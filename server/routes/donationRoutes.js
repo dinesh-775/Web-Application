@@ -1,0 +1,2 @@
+import {Router} from "express";import {create,demoSuccess,list} from "../controllers/donationController.js";import {auth,roles} from "../middleware/auth.js";
+const r=Router();r.post("/",create);r.post("/:id/demo-success",demoSuccess);r.get("/",auth,roles("PRESIDENT","VICE_PRESIDENT"),list);export default r;
