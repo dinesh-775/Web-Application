@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { api, authConfig, downloadReceipt } from "./api";
 import "./style.css";
@@ -408,18 +408,20 @@ function Committee() {
             {members.map(m => (
               <div key={m._id} className="card" style={{ textAlign: "center" }}>
                 <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "linear-gradient(135deg, var(--accent-saffron), var(--accent-gold))", margin: "0 auto 16px auto", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" }}>
+                </div>
 
                 <div>
-                    <p style={{ color: "var(--accent-saffron)", fontWeight: "600", marginBottom: "8px" }}>
+                  <p style={{ color: "var(--accent-saffron)", fontWeight: "600", marginBottom: "8px" }}>
                     {m.position}
-                </p>
+                  </p>
 
-                    <p>{m.description || "Active community organizer."}</p>
+                  <p>{m.description || "Active community organizer."}</p>
 
-                    <p style={{ borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>
+                  <p style={{ borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>
                     {m.contact}
-                </p>
-</div>
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -2802,10 +2804,3 @@ function AdminDonations() {
     </div>
   );
 }
-
-
-
-
-
-
-
