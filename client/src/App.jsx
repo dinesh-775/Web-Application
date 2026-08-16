@@ -409,12 +409,17 @@ function Committee() {
               <div key={m._id} className="card" style={{ textAlign: "center" }}>
                 <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "linear-gradient(135deg, var(--accent-saffron), var(--accent-gold))", margin: "0 auto 16px auto", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" }}>
 
-                </div>
-                <h2>{m.name}</h2>
-                <p style={{ color: "var(--accent-saffron)", fontWeight: "600", marginBottom: "8px" }}>{m.position}</p>
-                <p>{m.description || "Active community organizer."}</p>
-                {m.contact && <p style={{ fontSize: "0.85rem", marginTop: "12px", borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>ntact}</p>}
-              </div>
+                <div>
+                    <p style={{ color: "var(--accent-saffron)", fontWeight: "600", marginBottom: "8px" }}>
+                    {m.position}
+                </p>
+
+                    <p>{m.description || "Active community organizer."}</p>
+
+                    <p style={{ borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>
+                    {m.contact}
+                </p>
+</div>
             ))}
           </div>
 
