@@ -1,4 +1,4 @@
-import fs from "fs";
+﻿import fs from "fs";
 import path from "path";
 import PDFDocument from "pdfkit";
 import Receipt from "../models/Receipt.js";
@@ -17,3 +17,4 @@ export async function createReceipt({type,memberId,donationId,amount,paymentMeth
  doc.text(`Transaction/Reference: ${transactionId||"N/A"}`);doc.text(`Date (IST): ${istDate}`);doc.moveDown();doc.text("Thank you for supporting the Ganesh community.");doc.end();});
  return Receipt.create({receiptNumber,type,memberId,donationId,amount,paymentMethod,transactionId,pdfPath:file,email,emailSent:false,festivalYear});
 }
+

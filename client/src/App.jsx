@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { api, authConfig, downloadReceipt } from "./api";
 import "./style.css";
@@ -17,7 +17,7 @@ function Layout({ children, user, onLogout }) {
     <>
       <header>
         <Link to="/" className="brand">
-          🙏 Ganesh Community
+          ðŸ™ Ganesh Community
         </Link>
         <nav>
           <Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link>
@@ -50,7 +50,7 @@ function Layout({ children, user, onLogout }) {
       <main>{children}</main>
       <footer>
         <div className="footer-content">
-          <div className="footer-logo">🙏 GANESH COMMUNITY MANAGEMENT</div>
+          <div className="footer-logo">ðŸ™ GANESH COMMUNITY MANAGEMENT</div>
           <p>© 2026 Ganesh Community. Preserving culture and cultivating community transparency.</p>
         </div>
       </footer>
@@ -123,7 +123,7 @@ function Countdown({ festivalDate }) {
       )}
       {status === "CELEBRATING" && (
         <div className="festival-status-badge" style={{ background: "rgba(76, 175, 80, 0.15)", color: "#4caf50", borderColor: "#4caf50" }}>
-          🎉 festival is currently active! Happy Ganesh Chaturthi! 🎉
+          ðŸŽ‰ festival is currently active! Happy Ganesh Chaturthi! ðŸŽ‰
         </div>
       )}
       {status === "COMPLETED" && (
@@ -150,7 +150,7 @@ function Home() {
   return (
     <div className="page">
       <section className="hero">
-        <p style={{ fontSize: "2rem" }}>🕉️</p>
+        <p style={{ fontSize: "2rem" }}>ðŸ•‰ï¸</p>
         <h1>{settings?.communityName || "Ganesh Community"}</h1>
         <p className="lead">{settings?.description || "Welcome to our Ganesh community portal."}</p>
         <Countdown festivalDate={settings?.festivalDate} />
@@ -204,9 +204,9 @@ function Home() {
           <p style={{ marginBottom: "16px" }}>Reach out directly to the festival committee for queries or manual receipt verifications.</p>
           {settings ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.9rem" }}>
-              <div>📞 {settings.phone || "Not specified"}</div>
-              <div>✉️ {settings.email || "Not specified"}</div>
-              <div>📍 {settings.address || "Not specified"}</div>
+              <div>ðŸ“ž {settings.phone || "Not specified"}</div>
+              <div>✉️ {settings.email || "Not specified"}</div>
+              <div>ðŸ“ {settings.address || "Not specified"}</div>
             </div>
           ) : (
             <p>Loading contact details...</p>
@@ -253,9 +253,9 @@ function Events() {
               </span>
               <h2>{ev.title}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "0.9rem", color: "var(--text-muted)", margin: "12px 0" }}>
-                <div>📅 Date: {ev.date ? new Date(ev.date).toLocaleDateString() : "TBD"}</div>
-                <div>🕒 Time: {ev.time || "TBD"}</div>
-                <div>📍 Venue: {ev.location || "TBD"}</div>
+                <div>ðŸ“… Date: {ev.date ? new Date(ev.date).toLocaleDateString() : "TBD"}</div>
+                <div>ðŸ•’ Time: {ev.time || "TBD"}</div>
+                <div>ðŸ“ Venue: {ev.location || "TBD"}</div>
               </div>
               <p>{ev.description}</p>
             </div>
@@ -352,12 +352,12 @@ function Committee() {
             {members.map(m => (
               <div key={m._id} className="card" style={{ textAlign: "center" }}>
                 <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "linear-gradient(135deg, var(--accent-saffron), var(--accent-gold))", margin: "0 auto 16px auto", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" }}>
-                  👤
+                  ðŸ‘¤
                 </div>
                 <h2>{m.name}</h2>
                 <p style={{ color: "var(--accent-saffron)", fontWeight: "600", marginBottom: "8px" }}>{m.position}</p>
                 <p>{m.description || "Active community organizer."}</p>
-                {m.contact && <p style={{ fontSize: "0.85rem", marginTop: "12px", borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>📞 {m.contact}</p>}
+                {m.contact && <p style={{ fontSize: "0.85rem", marginTop: "12px", borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>ðŸ“ž {m.contact}</p>}
               </div>
             ))}
           </div>
@@ -1357,16 +1357,16 @@ function AdminPortal({ user }) {
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <ul className="admin-sidebar-menu">
-          <li className={`admin-sidebar-item ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>📊 Overview</li>
-          <li className={`admin-sidebar-item ${activeTab === "members" ? "active" : ""}`} onClick={() => setActiveTab("members")}>👥 Members Management</li>
-          <li className={`admin-sidebar-item ${activeTab === "applications" ? "active" : ""}`} onClick={() => setActiveTab("applications")}>📝 Pending Registrations</li>
-          <li className={`admin-sidebar-item ${activeTab === "cash" ? "active" : ""}`} onClick={() => setActiveTab("cash")}>💵 Verify Cash Payments</li>
-          <li className={`admin-sidebar-item ${activeTab === "donations" ? "active" : ""}`} onClick={() => setActiveTab("donations")}>💝 Donations Registry</li>
-          <li className={`admin-sidebar-item ${activeTab === "receipts" ? "active" : ""}`} onClick={() => setActiveTab("receipts")}>🧾 Receipt Audit</li>
-          <li className={`admin-sidebar-item ${activeTab === "expenses" ? "active" : ""}`} onClick={() => setActiveTab("expenses")}>📉 Expenses Desk</li>
-          <li className={`admin-sidebar-item ${activeTab === "content" ? "active" : ""}`} onClick={() => setActiveTab("content")}>🖼️ Content Control</li>
-          <li className={`admin-sidebar-item ${activeTab === "settings" ? "active" : ""}`} onClick={() => setActiveTab("settings")}>⚙️ Portal Settings</li>
-          <li className={`admin-sidebar-item ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>📜 Security Audit Trail</li>
+          <li className={`admin-sidebar-item ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>ðŸ“Š Overview</li>
+          <li className={`admin-sidebar-item ${activeTab === "members" ? "active" : ""}`} onClick={() => setActiveTab("members")}>ðŸ‘¥ Members Management</li>
+          <li className={`admin-sidebar-item ${activeTab === "applications" ? "active" : ""}`} onClick={() => setActiveTab("applications")}>ðŸ“ Pending Registrations</li>
+          <li className={`admin-sidebar-item ${activeTab === "cash" ? "active" : ""}`} onClick={() => setActiveTab("cash")}>ðŸ’µ Verify Cash Payments</li>
+          <li className={`admin-sidebar-item ${activeTab === "donations" ? "active" : ""}`} onClick={() => setActiveTab("donations")}>ðŸ’ Donations Registry</li>
+          <li className={`admin-sidebar-item ${activeTab === "receipts" ? "active" : ""}`} onClick={() => setActiveTab("receipts")}>ðŸ§¾ Receipt Audit</li>
+          <li className={`admin-sidebar-item ${activeTab === "expenses" ? "active" : ""}`} onClick={() => setActiveTab("expenses")}>ðŸ“‰ Expenses Desk</li>
+          <li className={`admin-sidebar-item ${activeTab === "content" ? "active" : ""}`} onClick={() => setActiveTab("content")}>ðŸ–¼ï¸ Content Control</li>
+          <li className={`admin-sidebar-item ${activeTab === "settings" ? "active" : ""}`} onClick={() => setActiveTab("settings")}>⚙️ Portal Settings</li>
+          <li className={`admin-sidebar-item ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>ðŸ“œ Security Audit Trail</li>
         </ul>
       </aside>
 
@@ -1422,9 +1422,9 @@ function AdminPortal({ user }) {
               <div className="card">
                 <h2>Pending Action Quick Summary</h2>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "16px" }}>
-                  <div>📝 Applications pending approval: <strong>{apps.filter(x => x.status === "PENDING").length}</strong></div>
-                  <div>💵 Cash payments waiting verification: <strong>{payments.filter(x => x.paymentMethod === "CASH" && x.status === "PENDING").length}</strong></div>
-                  <div>🎉 Scheduled festival events: <strong>{eventsList.length}</strong></div>
+                  <div>ðŸ“ Applications pending approval: <strong>{apps.filter(x => x.status === "PENDING").length}</strong></div>
+                  <div>ðŸ’µ Cash payments waiting verification: <strong>{payments.filter(x => x.paymentMethod === "CASH" && x.status === "PENDING").length}</strong></div>
+                  <div>ðŸŽ‰ Scheduled festival events: <strong>{eventsList.length}</strong></div>
                 </div>
               </div>
             </div>
@@ -1513,7 +1513,7 @@ function AdminPortal({ user }) {
             {showRejectModal && (
               <div className="modal-overlay">
                 <div className="modal-content">
-                  <button className="modal-close" onClick={() => setShowRejectModal(false)}>×</button>
+                  <button className="modal-close" onClick={() => setShowRejectModal(false)}>Ã—</button>
                   <h2 style={{ marginBottom: "20px" }}>Reject Application</h2>
                   <form onSubmit={handleRejectApp}>
                     <div className="form-group">
@@ -2028,3 +2028,6 @@ export default function App() {
     </Layout>
   );
 }
+
+
+
