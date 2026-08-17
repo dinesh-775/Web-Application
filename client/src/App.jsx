@@ -1819,7 +1819,6 @@ function AdminPortal({ user }) {
         logsRes, eventsRes, galleryRes, committeeRes
       ] = await Promise.all([
         api.get("/member-applications", config),
-        api.get("/payments", config),
         api.get("/members", config),
         api.get("/finance/admin-summary", config),
         api.get("/donations", config),
