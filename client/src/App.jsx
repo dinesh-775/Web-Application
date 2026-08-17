@@ -1473,21 +1473,26 @@ function MemberPortal({ user }) {
   const [loading, setLoading] = useState(false);
 
   const loadData = async () => {
-    try {
-      const [pRes, mRes] = await Promise.all([
-        api.get("/members/me", authConfig())
-      ]);
-      setPayments(pRes.data);
-      setData(mRes.data);
-      setProfile({
-        phone: mRes.data.member.phone || "",
-        address: mRes.data.member.address || "",
-        occupation: mRes.data.member.occupation || ""
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  try {
+    const mRes = await api.get(
+      "/members/me",
+      authConfig()
+    );
+
+    console.log("MEMBER DATA:", mRes.data);
+
+    setData(mRes.data);
+
+    setProfile({
+      phone: mRes.data.member?.phone || "",
+      address: mRes.data.member?.address || "",
+      occupation: mRes.data.member?.occupation || ""
+    });
+
+  } catch (e) {
+    console.error("MEMBER PORTAL ERROR:", e);
+  }
+};
 
   useEffect(() => {
     loadData();
