@@ -588,21 +588,6 @@ function Committee() {
                       "Active community organizer."}
                   </p>
 
-                  {/* CONTACT */}
-
-                  {m.contact && (
-
-                    <p
-                      style={{
-                        fontSize: "0.78rem",
-                        margin: "0"
-                      }}
-                    >
-                      📞 {m.contact}
-                    </p>
-
-                  )}
-
                 </div>
 
               </div>
