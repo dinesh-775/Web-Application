@@ -1475,7 +1475,6 @@ function MemberPortal({ user }) {
   const loadData = async () => {
     try {
       const [pRes, mRes] = await Promise.all([
-        api.get("/payments", authConfig()),
         api.get("/members/me", authConfig())
       ]);
       setPayments(pRes.data);
@@ -1819,6 +1818,7 @@ function AdminPortal({ user }) {
         logsRes, eventsRes, galleryRes, committeeRes
       ] = await Promise.all([
         api.get("/member-applications", config),
+        api.get("/payments", authConfig()),
         api.get("/members", config),
         api.get("/finance/admin-summary", config),
         api.get("/donations", config),
