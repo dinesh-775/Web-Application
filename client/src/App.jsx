@@ -212,7 +212,7 @@ function Home() {
         <Countdown festivalDate={settings?.festivalDate} />
         <div style={{ marginTop: "24px" }}>
           <Link className="btn btn-primary" to="/donate" style={{ marginRight: "12px" }}>Donate Now</Link>
-          <Link className="btn btn-outline" to="/register" style={{marginTop : 12px}}>Join as Member</Link>
+          <Link className="btn btn-outline" to="/register">Join as Member</Link>
         </div>
       </section>
 
